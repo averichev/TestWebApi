@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  grpc:
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - "7283:7283"
+    networks:
+      - dev_network
+    image: "grpc"
+    container_name: "grpc"
+
+networks:
+  dev_network:
+      name: dev-network
+      external: true

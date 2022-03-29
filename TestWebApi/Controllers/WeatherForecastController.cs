@@ -1,22 +1,17 @@
+using Grpc.Net.Client;
+using GrpcGreeterClient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TestWebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
+    private static readonly string[] Summaries =
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
-    {
-        _logger = logger;
-    }
 
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
@@ -28,5 +23,23 @@ public class WeatherForecastController : ControllerBase
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+    }
+
+    [HttpGet(Name = "GrpcTest")]
+    public async Task GrpcTest()
+    {
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        using var channel = GrpcChannel.ForAddress(
+            "https://grpc:7283",
+            new GrpcChannelOptions
+            {
+                HttpHandler = httpHandler
+            });
+        var client = new Greeter.GreeterClient(channel);
+        var reply = await client.SayHelloAsync(
+            new HelloRequest {Name = "GreeterClient"});
+        Console.WriteLine("Greeting: " + reply.Message);
     }
 }

@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  web:
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - "7282:7282"
+    networks:
+      - dev_network
+    image: "web"
+    container_name: "web"
+ 
+networks:
+  dev_network:
+    name: dev-network
+    external: true
