@@ -1,3 +1,4 @@
+using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcGreeterClient;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +29,13 @@ public class WeatherForecastController : ControllerBase
     [HttpGet(Name = "GrpcTest")]
     public async Task GrpcTest()
     {
-        var httpHandler = new HttpClientHandler();
-        httpHandler.ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        // AppContext.SetSwitch(
+        //     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
+        //     true
+        // );
         using var channel = GrpcChannel.ForAddress(
-            "https://grpc:7283",
-            new GrpcChannelOptions
-            {
-                HttpHandler = httpHandler
-            });
+            "http://grpc:7283"
+        );
         var client = new Greeter.GreeterClient(channel);
         var reply = await client.SayHelloAsync(
             new HelloRequest {Name = "GreeterClient"});

@@ -15,7 +15,6 @@ RUN ./dotnet-install.sh -c 6.0
 RUN ln -s /root/.dotnet/dotnet  /usr/bin/dotnet
 RUN dotnet --info
 RUN rm dotnet-install.sh
-RUN update-ca-certificates
 WORKDIR /app/
 COPY . .
 RUN dotnet restore
